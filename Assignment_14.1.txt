@@ -1,0 +1,27 @@
+Problem Statement
+-----------------
+Create a database named 'custom'.
+
+Create a table named temperature_data inside custom having below fields:
+1. date (mm-dd-yyyy) format
+2. zip code
+3. temperature
+
+The table will be loaded from comma-delimited file.
+
+Load the dataset.txt (which is ',' delimited) in the table.
+
+Solution:
+--------
+create database if not exists custom;
+show databases; 
+use custom; 
+
+-- Create a table with the date column as string 
+   create table  temperature_staging (date String , zipcode String , tem-perature String) row format delimited fields terminated by ',' ;
+-- Load the data in to the temperary table
+   load data local inpath '/tmp/dataset.txt' overwrite into table temperature_staging;
+-- Create the final table with the date format
+   create table  temperature_data (date Date, zipcode String , temperature String) row format delimited fields terminated by ',' ;
+-- Load the data from the temp table to the final table using the unix date converter
+   insert into table temperature_data  select from_unixtime(unix_timestamp(date,'mm-dd-yyyy')),zipcode,temperature from temperature_staging;
